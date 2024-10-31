@@ -11,7 +11,8 @@ class PDFController extends Controller
     {
         if ($request->has('url')) {
 
-            $url = $request->url;
+            // $url = $request->url;
+            $url = urldecode($request->url);
             $fileName = 'app/public/PDF_' . time() . '.pdf';
             $delay = $request->delay ?? 5000;
 
