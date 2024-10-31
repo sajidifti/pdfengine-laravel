@@ -37,6 +37,8 @@ class PDFController extends Controller
                 ])
                 ->setChromePath("/home/www-data/.cache/puppeteer/chrome/linux-130.0.6723.69/chrome-linux64/chrome")
                 ->newHeadless()
+                ->format('A4')
+                ->margins(0, 0, 0, 0)
                 ->showBackground()
                 ->delay($delay)
                 ->savePdf(storage_path($fileName));
