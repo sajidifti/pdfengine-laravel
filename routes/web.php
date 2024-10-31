@@ -11,3 +11,4 @@ Route::get('/', function () {
 
 
 Route::get('pdf', [PDFController::class, 'generatePDF'])->name('pdf');
+Route::post('pdf/post', [PDFController::class, 'generatePDF'])->name('pdf.post');
