@@ -14,7 +14,7 @@ class PDFController extends Controller
             // $url = $request->url;
             $url = urldecode($request->url);
             $fileName = 'app/public/PDF_' . time() . '.pdf';
-            $delay = $request->delay ?? 500;
+            $delay = $request->delay ?? 300;
 
             // Browsershot::url($url)
             //     ->format('A4')
@@ -42,7 +42,7 @@ class PDFController extends Controller
                 ->margins(0, 0, 0, 0)
                 ->showBackground()
                 ->waitUntilNetworkIdle()
-                // ->delay($delay)
+                ->delay($delay)
                 ->savePdf(storage_path($fileName));
 
             return response()->download(storage_path($fileName))->deleteFileAfterSend(true);
