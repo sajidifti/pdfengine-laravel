@@ -7,13 +7,31 @@ use Spatie\Browsershot\Browsershot;
 
 class PDFController extends Controller
 {
+    public function preview(Request $request)
+    {
+        if ($request->has('url')) {
+            $url = urldecode($request->url);
+
+            $queryParams = http_build_query(array_filter([
+                'delay' => $request->query('delay'),
+                'url' => $request->query('url'),
+                'filename' => $request->query('filename'),
+            ]));
+
+            return view('preview', compact('url', 'queryParams'));
+        }
+
+        abort(404);
+    }
+
+    // Accept JSON as function input
     public function generatePDF(Request $request)
     {
         if ($request->has('url')) {
 
             // $url = $request->url;
             $url = urldecode($request->url);
-            $fileName = 'app/public/PDF_' . time() . '.pdf';
+            $fileName = ($request->filename ? $request->filename . '.pdf' : 'app/public/PDF_' . time() . '.pdf');
             $delay = $request->delay ?? 300;
 
             // Browsershot::url($url)
