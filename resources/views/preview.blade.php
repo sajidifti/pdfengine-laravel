@@ -55,7 +55,7 @@
 <body>
 
     <div id="preview-frame">
-        <iframe onload="resizeIframe(this)" class="preview-frame" src="{{ $url }}" frameborder="0"></iframe>
+        <iframe sandbox="allow-scripts allow-same-origin" onload="resizeIframe(this)" class="preview-frame" src="{{ $url }}" frameborder="0"></iframe>
     </div>
 
     <div class="button-container">
