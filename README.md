@@ -1,66 +1,94 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# PDFEngine Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+PDFEngine is a Laravel-based application that uses Spatie's [Browsershot](https://github.com/spatie/browsershot) (powered by Puppeteer and Headless Chromium) to quickly generate PDF documents from live URLs or raw HTML content.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Generate PDF from a URL:** Render public web pages to PDF format.
+- **Generate PDF from raw HTML:** Send raw HTML strings and get beautifully rendered PDFs.
+- **Preview UI:** Provides a web-based interface for previewing the output before initiating the actual download.
+- **Direct Download APIs:** Endpoints specifically tailored to return the PDF file directly.
+- **Service Ready:** CSRF token verification is disabled for key API endpoints (`/html`, `/pdf/download`), making it easy to integrate with other services over simple HTTP requests.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Endpoints & Usage Examples
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1. Direct PDF Download from URL
 
-## Learning Laravel
+Generates a PDF from a specified URL and immediately returns the file stream.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Endpoint:** `GET /pdf/download`
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+**Parameters:**
+- `url` (required): The valid URL of the page you want to convert to PDF.
+- `filename` (optional): The custom name for the downloaded file (without the `.pdf` extension).
+- `delay` (optional): Delay in milliseconds before saving the PDF (useful for pages with heavy JS rendering or loading animations). Default is `300`.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Example (cURL):**
+```bash
+curl -X GET "http://127.0.0.1:8000/pdf/download?url=https://example.com&filename=my-example" --output my-example.pdf
+```
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 2. Direct PDF Download from HTML
 
-### Premium Partners
+Generates a PDF from a provided raw HTML string and immediately returns the file stream.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+**Endpoint:** `POST /pdf/download`
 
-## Contributing
+**Parameters:**
+- `html` (required): The raw HTML string.
+- `filename` (optional): The custom name for the downloaded file (without the `.pdf` extension).
+- `delay` (optional): Delay in milliseconds before saving the PDF.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**Example (cURL):**
+```bash
+curl -X POST http://127.0.0.1:8000/pdf/download \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "html=<h1>Hello World</h1><p>This is a custom PDF generation test.</p>" \
+  --output custom.pdf
+```
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 3. Generate HTML Preview (Interactive UI)
 
-## Security Vulnerabilities
+Provides a web-based UI preview of your generated HTML before downloading. The system caches the HTML temporarily and serves a UI with an iframe showing the design, alongside a "Download" button.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Endpoint:** `POST /html`
 
-## License
+**Parameters:**
+- `html` (required): Raw HTML string to preview.
+- `filename` (optional): Preferred filename if the user decides to download.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Example (cURL):**
+*(Typically you would submit an HTML form to this endpoint rather than cURL, as the response is a web page).*
+```bash
+curl -X POST http://127.0.0.1:8000/html \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "html=<h1>Preview Me</h1><p>I am a preview.</p>"
+```
+
+---
+
+### 4. Provide URL Preview (Interactive UI)
+
+A web UI endpoint that renders an iframe of the target URL with a "Download" button below it.
+
+**Endpoint:** `GET /url` (or `GET /pdf`)
+
+**Parameters:**
+- `url` (required): The URL to preview.
+- `filename` (optional): Preferred filename if the user decides to download.
+
+**Example:**
+Navigate via your web browser to: 
+`http://127.0.0.1:8000/url?url=https://laravel.com`
+
+---
+
+## Technical Details
+
+- **Spatie Browsershot:** Ensure that your server environment has Node.js and Puppeteer/Chromium dependencies correctly installed and configured.
+- **Internal Configuration:** The controller specifically passes arguments to Chromium like `--disable-web-security`, and configures strict `user-data-dir` and `disk-cache-dir` paths optimized for Linux/www-data environments. 
+- **Caching Mechanism:** The HTML preview component relies on Laravel's Cache to safely store incoming HTML payloads for 1 hour. It returns a temporary unguessable ID mapped to the route `GET /html/render/{id}` to securely pipe your text into the iframe.
