@@ -12,7 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(except: [
-            'pdf/post'
+            'pdf/post',
+            'html',
+            'pdf/download',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
